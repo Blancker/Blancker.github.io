@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=360px,user-scalable=no" />
 		<title>原生JS2048</title>
 		<style>
-			body,h1,div,table,tr,td{
+			html,body,div,table,tr,td,h1,hr{
 				margin: 0px;
 				padding: 0px;
 			}
@@ -20,30 +20,39 @@
 				font-size: 48px;
 				text-shadow: 1px 2px 3px rgb(134,134,134);
 			}
-			div{
+			#mune{
 				margin: 12px auto;
-				line-height: 60px;
-			}
-			#box{
+				line-height: 34px;
 				margin-top: -24px;
-				width: 240px;
-				height: 60px;
 				text-align: center;
 				font-weight: bold;
+				font-family: "楷体";
 				color: rgb(255,255,255);
+				border: 1px solid rgba(0,0,0,0);
 			}
-			#box input{
-				border: 3px solid rgb(255,255,255);
-				border-radius: 4px;
-				box-shadow: 1px 2px 3px rgb(234,234,234);
+			#mune #new{
+				width: 60px;
+				line-height: 28px;
+				text-align: center;
+				background: rgb(112,112,112);
+				background: -webkit-linear-gradient(top,rgb(212,212,212),rgb(112,112,112));
+				border-radius: 7px;
+				box-shadow: 0px 0px 3px rgb(255,255,255);
+				display: inline-block;
 			}
-			#box input:focus{
-				outline-style: none;
+			#mune #new:hover{
+				cursor: pointer;
+			}
+			#mune #new:active{
+				background: -webkit-linear-gradient(top,rgb(112,112,112),rgb(212,212,212));
 			}
 			table{
 				margin: 24px auto;
 				border: 3px solid rgb(255,255,255);
 				border-radius: 6px;
+			}
+			#random{
+				margin: 12px auto;
 			}
 			#random,td{
 				width: 60px;
@@ -51,20 +60,65 @@
 				border: 2px solid rgb(255,255,255);
 				border-radius: 18px;
 				text-align: center;
+				line-height: 60px;
 				font-weight: bold;
 				color: rgb(255,255,255);
 			}
 			td:hover{
 				cursor: pointer;
 			}
+			
+			#alertBox{
+				width: 320px;
+				height: 240px;
+				font-family: "楷体";
+				background-color: rgb(255,255,255,0.9);
+				border: 1px solid rgba(0,0,0,0);
+				border-radius: 18px;
+				overflow: hidden;
+				position: absolute;
+				z-index: 99;
+			}
+			#alertBox #ahead{
+				width: 320px;
+				line-height: 40px;
+				text-align: center;
+			}
+			#alertBox #abody{
+				width: 320px;
+				line-height: 140px;
+				text-align: center;
+			}
+			#alertBox #afoot{
+				width: 320px;
+				line-height: 60px;
+				text-align: center;
+			}
+			#alertBox #afoot span{
+				width: 60px;
+				line-height: 30px;
+				text-align: center;
+				background: rgb(30,144,255);
+				background: -webkit-linear-gradient(top,rgb(85,198,239),rgb(30,144,255));
+				border-radius: 7px;
+				box-shadow: 1px 1px 3px rgb(0,0,0);
+				display: inline-block;
+			}
+			#alertBox #afoot span:hover{
+				cursor: pointer;
+			}
+			#alertBox #afoot span:active{
+				background: -webkit-linear-gradient(top,rgb(30,144,255),rgb(85,198,239));
+			}
+			
 		</style>
 	</head>
 	<body>
 		<h1>2 0 4 8</h1>
-		<div id="box">
+		<div id="mune">
+			<span id="new">新游戏</span>
+			&nbsp;&nbsp;
 			得分: <span id="span">0</span>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<input id="but" type="button" value="新游戏" />
 		</div>
 		<div id="random"></div>
 		<table border="3px">
@@ -93,11 +147,25 @@
 				<td></td>
 			</tr>
 		</table>
+		<div id="alertBox" style="display: none;">
+			<div id="ahead">
+				<span>温馨提示</span>
+			</div>
+			<hr />
+			<div id="abody">
+				<span>哎呀！一不小心就输了。。。</span>
+			</div>
+			<div id="afoot">
+				<span id="sub">确定</span>
+			</div>
+		</div>
 		
 		<script type="text/javascript">
 			var span = document.getElementById("span");
-			var but = document.getElementById("but");
+			var but = document.getElementById("new");
 			var td = document.getElementsByTagName("td");
+			var alertBox = document.getElementById("alertBox");
+			var sub = document.getElementById("sub");
 			//定义得分
 			var score = 0;
 			//定义随机数
@@ -125,6 +193,7 @@
 				}
 				random.innerHTML = showNums[num];
 				color(random);
+				show(random);
 				showNum = showNums[num];
 			}
 			init();
@@ -212,81 +281,81 @@
 					if(offsetBottom(obj,index)){
 						if(offsetLeft(obj,index)){
 							if(offsetRight(obj,index)){
+								score += parseInt(obj.innerHTML);
 								obj.innerHTML = parseInt(obj.innerHTML)*2;//合并上、下、左、右
-								score += 16;
 								merge(obj,index);
 							}else{
+								score += parseInt(obj.innerHTML);
 								obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并上、下、左
-								score += 8;
 								merge(obj,index);
 							}
 						}else if(offsetRight(obj,index)){
+							score += parseInt(obj.innerHTML);
 							obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并上、下、右
-							score += 8;
 							merge(obj,index);
 						}else{
+							score += parseInt(obj.innerHTML);
 							obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并上、下
-							score += 4;
 							merge(obj,index);
 						}
 					}else if(offsetLeft(obj,index)){
 						if(offsetRight(obj,index)){
+							score += parseInt(obj.innerHTML);
 							obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并上、左、右
-							score += 8;
 							merge(obj,index);
 						}else{
+							score += parseInt(obj.innerHTML);
 							obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并上、左
-							score += 4;
 							merge(obj,index);
 						}
 					}else if(offsetRight(obj,index)){
+						score += parseInt(obj.innerHTML);
 						obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并上、右
-						score += 4;
 						merge(obj,index);
 					}else{
+						score += parseInt(obj.innerHTML);
 						obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并上
-						score += 2;
 						merge(obj,index);
 					}
 				}else if(offsetBottom(obj,index)){
 					if(offsetLeft(obj,index)){
 						if(offsetRight(obj,index)){
+							score += parseInt(obj.innerHTML);
 							obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并下、左、右
-							score += 8;
 							merge(obj,index);
 						}else{
+							score += parseInt(obj.innerHTML);
 							obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并下、左
-							score += 4;
 							merge(obj,index);
 						}
 					}else if(offsetRight(obj,index)){
+						score += parseInt(obj.innerHTML);
 						obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并下、右
-						score += 4;
 						merge(obj,index);
 					}else{
+						score += parseInt(obj.innerHTML);
 						obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并下
-						score += 2;
 						merge(obj,index);
 					}
 				}else if(offsetLeft(obj,index)){
 					if(offsetRight(obj,index)){
+						score += parseInt(obj.innerHTML);
 						obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并左、右
-						score += 4;
 						merge(obj,index);
 					}else{
+						score += parseInt(obj.innerHTML);
 						obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并左
-						score += 2;
 						merge(obj,index);
 					}
 				}else if(offsetRight(obj,index)){
+					score += parseInt(obj.innerHTML);
 					obj.innerHTML = parseInt(obj.innerHTML)*2;//仅合并右
-					score += 2;
 					merge(obj,index);
 				}
 			}
 			/* end */
 			
-			//main
+			//判断游戏是否结束
 			/* start */
 			function gameOver(){
 				for(var i=0;i<td.length;i++){
@@ -294,7 +363,10 @@
 						break;
 					}
 					if(i == 15){
-						alert("很遗憾！本局游戏结束。。。");
+						alertBox.style.display = "block";
+						alertBox.style.top = (window.innerHeight-alertBox.clientHeight)/2 + "px";
+						alertBox.style.left = (window.innerWidth-alertBox.clientWidth)/2 + "px";
+						show(alertBox);
 					}
 				}
 			}
@@ -309,6 +381,7 @@
 					choose.onclick = function(){
 						if(this.innerHTML == ""){
 							this.innerHTML = showNum;
+							show(this);
 							merge(this,this.index);
 							if(this.innerHTML >= 2048){
 								this.innerHTML = "";
@@ -327,15 +400,15 @@
 			//更新得分
 			/* start */
 			function updateScore(){
-				if(score > 500){
+				if(score > 50000){
 					span.style = "color: rgb(255,0,0)";
-				}else if(score > 100){
+				}else if(score > 20000){
 					span.style = "color: rgb(255,0,255)";
-				}else if(score > 50){
+				}else if(score > 10000){
 					span.style = "color: rgb(255,255,0)";
-				}else if(score > 20){
+				}else if(score > 5000){
 					span.style = "color: rgb(0,0,255)";
-				}else if(score > 10){
+				}else if(score > 1000){
 					span.style = "color: rgb(0,255,0)";
 				}
 				span.innerHTML = score;
@@ -345,9 +418,42 @@
 			//新游戏
 			/* start */
 			but.onclick = function(){
-				location.reload();
+				alertBox.style.display = "none";
+				for(var i=0;i<td.length;i++){
+					td[i].innerHTML = "";
+					td[i].style = "background-color: rgba(0, 0, 0, 0);";
+				}
+				score = 0;
+				span.style.color = "rgb(255, 255, 255)";
+				span.innerHTML = 0;
+				init();
 			}
 			/* end */
 			
+			//淡出特效优化
+			/* start */
+			function show(obj){
+				obj.style.opacity = 0;
+				var opacity = 0;
+				function showmove(){
+					opacity += 0.1;
+					obj.style.opacity = opacity;
+					if(opacity < 1){
+						requestAnimationFrame(showmove);
+					}
+				}
+				requestAnimationFrame(showmove);
+			}
+			/* end */
+			
+			sub.onclick = function(){
+				alertBox.style.display = "none";
+			}
+			window.onresize = function(){
+				alertBox.style.top = (window.innerHeight-alertBox.clientHeight)/2 + "px";
+				alertBox.style.left = (window.innerWidth-alertBox.clientWidth)/2 + "px";
+			}
+			
 		</script>
+	</body>
 </html>
